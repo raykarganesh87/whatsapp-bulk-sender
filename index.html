@@ -129,16 +129,16 @@
 <body>
 
     <div class="container">
-        <h1>WA Bulk Sender</h1>
+        <h1>WA Bulk Sender 🚀</h1>
         
         <label for="message">Message to send:</label>
-        <textarea id="message" placeholder="Hello, this is a test message..."></textarea>
+        <textarea id="message" placeholder="Hello 🏗️, this is a test message with emojis 💧🔬..."></textarea>
 
         <label for="numbers">Phone Numbers (One per line):</label>
         <textarea id="numbers" placeholder="15551234567&#10;447911123456&#10;919876543210"></textarea>
         <p style="font-size: 12px; color: #666;">*Include Country Code, no + sign.</p>
 
-        <button onclick="generateLinks()">Generate Links</button>
+        <button onclick="generateLinks()">✨ Generate WhatsApp Links</button>
         <button id="installBtn" onclick="installApp()">📱 Install App</button>
 
         <div id="results" class="result-area"></div>
@@ -147,11 +147,11 @@
     <!-- Footer Section -->
     <div class="footer">
         Created by <strong>Mr. Ganesh Eknath Raykar</strong><br>
-        Mobile: <a href="https://wa.me/919011271052" target="_blank">9011271052</a>
+        Mobile: <a href="https://wa.me/919011271052" target="_blank">+91 90112 71052</a>
     </div>
 
     <!-- Toast Notification -->
-    <div id="toast" class="toast">Link copied to clipboard!</div>
+    <div id="toast" class="toast">Link copied to clipboard! 📋</div>
 
     <script>
         // Service Worker Registration
@@ -200,59 +200,87 @@
         // Copy to Clipboard Helper
         function copyToClipboard(text) {
             navigator.clipboard.writeText(text).then(() => {
-                showToast('Link copied to clipboard!');
+                showToast('Link copied to clipboard! 📋');
+            }).catch(err => {
+                console.error('Copy failed:', err);
+                showToast('Failed to copy link');
             });
         }
 
         // Main Function: Generate WhatsApp Links
         function generateLinks() {
-            const msg = document.getElementById('message').value.trim();
+            const msg = document.getElementById('message').value;
             const nums = document.getElementById('numbers').value.trim();
             const resultDiv = document.getElementById('results');
             
             resultDiv.innerHTML = '';
 
-            if (!msg || !nums) {
-                alert("Please fill in both fields");
+            // Validation
+            if (!msg || !nums || msg.trim() === "") {
+                alert("⚠️ Please fill in both fields with valid content");
                 return;
             }
+
+            // Normalize line breaks for better WhatsApp compatibility
+            const normalizedMsg = msg.replace(/\r\n/g, '\n').replace(/\r/g, '\n');
+            
+            // Encode message for URL (handles emojis & special chars)
+            const encodedMsg = encodeURIComponent(normalizedMsg);
 
             // Split numbers by new line and remove empty lines
             const numberList = nums.split('\n').map(n => n.trim()).filter(n => n !== '');
 
-            // Encode message for URL
-            const encodedMsg = encodeURIComponent(msg);
+            let validCount = 0;
 
             numberList.forEach(num => {
-                // Clean number (remove spaces, dashes, plus signs)
+                // Clean number (remove spaces, dashes, plus signs, parentheses)
                 const cleanNum = num.replace(/[^0-9]/g, '');
                 
-                if(cleanNum.length >= 10) { // Better validation
-                    // ✅ FIXED: No extra spaces in URL
+                // Basic validation: 10+ digits (adjust for your region if needed)
+                if(cleanNum.length >= 10) {
+                    validCount++;
+                    
+                    // ✅ FIXED: No spaces in URL - critical for emoji support!
                     const waLink = `https://wa.me/${cleanNum}?text=${encodedMsg}`;
                     
                     const card = document.createElement('div');
                     card.className = 'link-card';
                     card.innerHTML = `
-                        <span>${cleanNum}</span>
-                        <div>
-                            <a href="${waLink}" target="_blank" style="margin-right:10px">Open Chat ➤</a>
+                        <span>📱 ${cleanNum}</span>
+                        <div style="display:flex;gap:8px;flex-wrap:wrap;">
+                            <a href="${waLink}" target="_blank" style="background:var(--primary);color:white;padding:6px 12px;border-radius:6px;text-decoration:none;font-size:14px;font-weight:bold">
+                                Open Chat ➤
+                            </a>
                             <button onclick="copyToClipboard('${waLink}')" 
-                                    style="background:#075E54;padding:5px 10px;font-size:14px;width:auto;margin:0">
-                                Copy
+                                    style="background:#075E54;color:white;border:none;padding:6px 12px;border-radius:6px;font-size:14px;cursor:pointer;font-weight:bold">
+                                Copy 🔗
                             </button>
                         </div>
                     `;
                     resultDiv.appendChild(card);
                 } else {
-                    console.warn(`Invalid number skipped: ${num}`);
+                    console.warn(`⚠️ Invalid number skipped: ${num} (length: ${cleanNum.length})`);
                 }
             });
 
-            if (resultDiv.children.length === 0) {
-                resultDiv.innerHTML = '<p style="color:#666;text-align:center">No valid numbers found. Please check format.</p>';
+            if (validCount === 0) {
+                resultDiv.innerHTML = '<p style="color:#666;text-align:center;padding:20px">⚠️ No valid numbers found.<br>Please check format: <strong>CountryCode + Number</strong> (e.g., 919876543210)</p>';
+            } else {
+                showToast(`✅ Generated ${validCount} link${validCount > 1 ? 's' : ''}!`);
             }
         }
+
+        // Allow Ctrl+Enter to generate links
+        document.getElementById('message').addEventListener('keydown', function(e) {
+            if (e.ctrlKey && e.key === 'Enter') {
+                generateLinks();
+            }
+        });
+        document.getElementById('numbers').addEventListener('keydown', function(e) {
+            if (e.ctrlKey && e.key === 'Enter') {
+                generateLinks();
+            }
+        });
     </script>
 </body>
 </html>
