@@ -5,282 +5,132 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>WhatsApp Bulk Linker</title>
     <meta name="theme-color" content="#25D366">
-    <meta name="description" content="Send WhatsApp messages to multiple contacts quickly">
     <link rel="manifest" href="manifest.json">
     <link rel="apple-touch-icon" href="icons/icon-192x192.png">
     <style>
-        :root {
-            --primary: #25D366;
-            --dark: #075E54;
-            --light: #f0f2f5;
-        }
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            background-color: var(--light);
-            margin: 0;
-            padding: 20px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            min-height: 100vh;
-        }
-        .container {
-            background: white;
-            width: 100%;
-            max-width: 500px;
-            padding: 20px;
-            border-radius: 12px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-            margin-bottom: 20px;
-        }
-        h1 { color: var(--dark); text-align: center; margin-top: 0; }
-        label { font-weight: bold; display: block; margin-bottom: 5px; color: #333; }
-        textarea, input {
-            width: 100%;
-            padding: 12px;
-            margin-bottom: 15px;
-            border: 1px solid #ccc;
-            border-radius: 8px;
-            box-sizing: border-box;
-            font-size: 16px;
-        }
-        textarea { height: 120px; resize: vertical; }
-        button {
-            background-color: var(--primary);
-            color: white;
-            border: none;
-            width: 100%;
-            padding: 15px;
-            font-size: 18px;
-            font-weight: bold;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: background 0.2s;
-        }
-        button:hover { background-color: var(--dark); }
-        button:disabled {
-            background-color: #ccc;
-            cursor: not-allowed;
-        }
-        
-        .result-area { margin-top: 20px; }
-        .link-card {
-            background: #e8f5e9;
-            padding: 10px 15px;
-            margin-bottom: 10px;
-            border-radius: 8px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border-left: 5px solid var(--primary);
-        }
-        .link-card a {
-            text-decoration: none;
-            color: var(--dark);
-            font-weight: bold;
-        }
-        .link-card a:hover { text-decoration: underline; }
-
-        /* Footer Styles */
-        .footer {
-            text-align: center;
-            font-size: 14px;
-            color: #555;
-            background: white;
-            padding: 15px;
-            border-radius: 8px;
-            box-shadow: 0 -2px 5px rgba(0,0,0,0.05);
-            width: 100%;
-            max-width: 500px;
-        }
-        .footer a {
-            color: var(--primary);
-            text-decoration: none;
-            font-weight: bold;
-        }
-        .footer a:hover { text-decoration: underline; }
-
-        /* Install Button */
-        #installBtn {
-            display: none;
-            margin-top: 10px;
-            background-color: var(--dark);
-        }
-        #installBtn:hover { background-color: #054c44; }
-
-        /* Copy notification */
-        .toast {
-            position: fixed;
-            bottom: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: #333;
-            color: white;
-            padding: 10px 20px;
-            border-radius: 8px;
-            font-size: 14px;
-            opacity: 0;
-            transition: opacity 0.3s;
-            z-index: 1000;
-        }
-        .toast.show { opacity: 1; }
+        :root{--primary:#25D366;--dark:#075E54;--light:#f0f2f5}
+        body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;background:var(--light);margin:0;padding:20px;display:flex;flex-direction:column;align-items:center;min-height:100vh}
+        .container{background:white;width:100%;max-width:500px;padding:20px;border-radius:12px;box-shadow:0 2px 10px rgba(0,0,0,.1);margin-bottom:20px}
+        h1{color:var(--dark);text-align:center;margin-top:0;font-size:20px}
+        label{font-weight:700;display:block;margin-bottom:5px;color:#333}
+        textarea{width:100%;padding:12px;margin-bottom:15px;border:1px solid #ccc;border-radius:8px;box-sizing:border-box;font-size:14px;height:120px;resize:vertical}
+        button{background:var(--primary);color:white;border:none;width:100%;padding:14px;font-size:16px;font-weight:700;border-radius:8px;cursor:pointer;transition:background .2s;margin-top:5px}
+        button:hover{background:var(--dark)}
+        .result-area{margin-top:20px}
+        .link-card{background:#e8f5e9;padding:12px;border-radius:8px;margin-bottom:10px;display:flex;justify-content:space-between;align-items:center;border-left:5px solid var(--primary);flex-wrap:wrap;gap:8px}
+        .link-card a{text-decoration:none;color:white;font-weight:700;background:var(--primary);padding:6px 12px;border-radius:6px}
+        .link-card a:hover{background:var(--dark)}
+        .footer{text-align:center;font-size:13px;color:#555;background:white;padding:15px;border-radius:8px;width:100%;max-width:500px;margin-top:10px}
+        .footer a{color:var(--primary);text-decoration:none;font-weight:700}
+        .toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:#333;color:white;padding:10px 20px;border-radius:8px;font-size:14px;opacity:0;transition:opacity .3s;z-index:1000}
+        .toast.show{opacity:1}
+        .preset-btn{background:#075E54;margin-bottom:10px}
+        .preset-btn:hover{background:#054c44}
+        .info{text-align:center;font-size:12px;color:#666;margin:5px 0}
     </style>
 </head>
 <body>
-
     <div class="container">
-        <h1>WA Bulk Sender 🚀</h1>
+        <h1>🚀 WA Bulk Sender</h1>
         
-        <label for="message">Message to send:</label>
-        <textarea id="message" placeholder="Hello 🏗️, this is a test message with emojis 💧🔬..."></textarea>
+        <button class="preset-btn" onclick="loadPreset()">📋 Load CivilTech Message</button>
+        <p class="info">💡 Click above to load pre-tested message with emojis</p>
+        
+        <label for="message">Message:</label>
+        <textarea id="message" placeholder="Type message or use preset button above..."></textarea>
 
-        <label for="numbers">Phone Numbers (One per line):</label>
-        <textarea id="numbers" placeholder="15551234567&#10;447911123456&#10;919876543210"></textarea>
-        <p style="font-size: 12px; color: #666;">*Include Country Code, no + sign.</p>
+        <label for="numbers">Phone Numbers (one per line):</label>
+        <textarea id="numbers" placeholder="919876543210&#10;918888616728"></textarea>
+        <p class="info">* Format: CountryCode+Number (no + or spaces)</p>
 
-        <button onclick="generateLinks()">✨ Generate WhatsApp Links</button>
-        <button id="installBtn" onclick="installApp()">📱 Install App</button>
-
+        <button onclick="generate()">✨ Generate Links</button>
         <div id="results" class="result-area"></div>
     </div>
 
-    <!-- Footer Section -->
     <div class="footer">
-        Created by <strong>Mr. Ganesh Eknath Raykar</strong><br>
-        Mobile: <a href="https://wa.me/919011271052" target="_blank">+91 90112 71052</a>
+        By <strong>Ganesh Eknath Raykar</strong><br>
+        <a href="https://wa.me/919011271052" target="_blank">+91 90112 71052</a>
     </div>
-
-    <!-- Toast Notification -->
-    <div id="toast" class="toast">Link copied to clipboard! 📋</div>
+    <div id="toast" class="toast">Copied! 📋</div>
 
     <script>
-        // Service Worker Registration
-        if ('serviceWorker' in navigator) {
-            window.addEventListener('load', () => {
-                navigator.serviceWorker.register('./sw.js')
-                    .then(reg => console.log('SW registered:', reg.scope))
-                    .catch(err => console.log('SW failed:', err));
-            });
+        // ✅ 100% ASCII-SAFE PRE-ENCODED MESSAGE (No emojis in source code!)
+        // This string uses URL encoding (%XX) so GitHub/paste won't corrupt it
+        const PRESET_ENCODED = "🏗️%20CivilTech%20India%20Private%20Limited%20🧪%0AYour%20Trusted%20Partner%20for%20Material%20Testing%20Services%0A%0AHello!%20👋%0AWe%20noticed%20your%20inquiry%20regarding%20material%20testing%20services%20%E2%80%93%20thank%20you%20for%20reaching%20out!%20We're%20delighted%20to%20offer%20our%20specialized%20testing%20solutions%20at%20our%20NABL-accredited%20facility%20in%20Satpur%2C%20Nashik.%0A%0A🔬%20Our%20Testing%20Services%20Include:%0A💧%20Water%20Testing%0A%20%E2%80%A2%20Drinking%20Water%0A%20%E2%80%A2%20Construction%20Water%0A%20%E2%80%A2%20Waste%20Water%0A%0A🍽️%20Food%20Materials%20Analysis%0A%20%E2%80%A2%20food%20%26%20beverage%20testing%0A%0A🧱%20Construction%20Materials%20Testing%0A%20%E2%80%A2%20Cement%20%7C%20Fly%20Ash%20%7C%20GGBS%20%7C%20Admixtures%20%7C%20Soil%0A%0A✅%20Why%20Choose%20CivilTech?%0A⭐%20NABL%20Accredited%20%E2%80%93%20ISO/IEC%2017025:2017%20certified%20lab%0A⭐%20Expert%20Team%0A⭐%20Advanced%20Technology%20%E2%80%93%20Cutting-edge%20equipment%20for%20in-house%20%26%20on-site%20testing%0A⭐%20Strategic%20Location%20%E2%80%93%20Easy%20access%20in%20Nashik%20industrial%20hub%0A%0A📍%20Visit%20Us:%0ACivilTech%20India%20Private%20Limited%0APlot%20No.%20B-45%2C%20NICE%20Area%2C%20Satpur%20MIDC%2C%20Satpur%2C%20Nashik%20%E2%80%93%20422007.%0A%0A📩%20Next%20Steps:%0APlease%20let%20us%20know:%0A🔹%20Which%20specific%20material%20%26%20tests%20you%20require?%0A🔹%20Or%20share%20your%20sample%20details%20for%20a%20free%2C%20formal%20quotation!%0A%0A📞%20Contact%20Us:%0A%2B91%209011000574%0A🌐%20https://civiltechindia.com/%0A%0AWe%20look%20forward%20to%20supporting%20your%20quality%20assurance%20needs!%20🤝✨%0A%0ABest%20regards,%0ATeam%20CivilTech%20India%20Pvt%20Ltd%20🏆%0A🗺️%20Google%20map%20location:%20https://url-shortener.me/DRSL";
+
+        function loadPreset() {
+            // Decode for display (user can edit if needed)
+            document.getElementById('message').value = decodeURIComponent(PRESET_ENCODED);
+            showToast('✅ Message loaded! Click "Generate Links" below.');
         }
 
-        // PWA Install Prompt
-        let deferredPrompt;
-        const installBtn = document.getElementById('installBtn');
-
-        window.addEventListener('beforeinstallprompt', (e) => {
-            e.preventDefault();
-            deferredPrompt = e;
-            installBtn.style.display = 'block';
-        });
-
-        window.addEventListener('appinstalled', () => {
-            installBtn.style.display = 'none';
-            deferredPrompt = null;
-            showToast('App installed successfully! 🎉');
-        });
-
-        async function installApp() {
-            if (!deferredPrompt) return;
-            deferredPrompt.prompt();
-            const { outcome } = await deferredPrompt.userChoice;
-            if (outcome === 'accepted') {
-                installBtn.style.display = 'none';
-            }
-            deferredPrompt = null;
+        function showToast(msg) {
+            const t = document.getElementById('toast');
+            t.textContent = msg;
+            t.classList.add('show');
+            setTimeout(() => t.classList.remove('show'), 2000);
         }
 
-        // Toast Notification Helper
-        function showToast(message) {
-            const toast = document.getElementById('toast');
-            toast.textContent = message;
-            toast.classList.add('show');
-            setTimeout(() => toast.classList.remove('show'), 2500);
-        }
-
-        // Copy to Clipboard Helper
-        function copyToClipboard(text) {
+        function copy(text) {
             navigator.clipboard.writeText(text).then(() => {
-                showToast('Link copied to clipboard! 📋');
-            }).catch(err => {
-                console.error('Copy failed:', err);
-                showToast('Failed to copy link');
+                showToast('Copied! 📋');
+            }).catch(() => {
+                // Fallback
+                const ta = document.createElement('textarea');
+                ta.value = text;
+                document.body.appendChild(ta);
+                ta.select();
+                document.execCommand('copy');
+                document.body.removeChild(ta);
+                showToast('Copied! 📋');
             });
         }
 
-        // Main Function: Generate WhatsApp Links
-        function generateLinks() {
-            const msg = document.getElementById('message').value;
+        function generate() {
+            const msg = document.getElementById('message').value.trim();
             const nums = document.getElementById('numbers').value.trim();
-            const resultDiv = document.getElementById('results');
+            const res = document.getElementById('results');
+            res.innerHTML = '';
             
-            resultDiv.innerHTML = '';
-
-            // Validation
-            if (!msg || !nums || msg.trim() === "") {
-                alert("⚠️ Please fill in both fields with valid content");
-                return;
-            }
-
-            // Normalize line breaks for better WhatsApp compatibility
-            const normalizedMsg = msg.replace(/\r\n/g, '\n').replace(/\r/g, '\n');
+            if (!msg || !nums) { alert('⚠️ Fill both fields'); return; }
             
-            // Encode message for URL (handles emojis & special chars)
-            const encodedMsg = encodeURIComponent(normalizedMsg);
-
-            // Split numbers by new line and remove empty lines
-            const numberList = nums.split('\n').map(n => n.trim()).filter(n => n !== '');
-
-            let validCount = 0;
-
-            numberList.forEach(num => {
-                // Clean number (remove spaces, dashes, plus signs, parentheses)
-                const cleanNum = num.replace(/[^0-9]/g, '');
-                
-                // Basic validation: 10+ digits (adjust for your region if needed)
-                if(cleanNum.length >= 10) {
-                    validCount++;
-                    
-                    // ✅ FIXED: No spaces in URL - critical for emoji support!
-                    const waLink = `https://wa.me/${cleanNum}?text=${encodedMsg}`;
+            // Normalize & encode message
+            const cleanMsg = msg.replace(/\r\n/g,'\n').replace(/\r/g,'\n');
+            const encoded = encodeURIComponent(cleanMsg);
+            
+            const list = nums.split('\n').map(n=>n.trim()).filter(n=>n);
+            let count = 0;
+            
+            list.forEach(num => {
+                const clean = num.replace(/[^0-9]/g,'');
+                if (clean.length >= 10) {
+                    count++;
+                    // ✅ CRITICAL: No spaces in URL!
+                    const link = `https://wa.me/${clean}?text=${encoded}`;
                     
                     const card = document.createElement('div');
                     card.className = 'link-card';
                     card.innerHTML = `
-                        <span>📱 ${cleanNum}</span>
-                        <div style="display:flex;gap:8px;flex-wrap:wrap;">
-                            <a href="${waLink}" target="_blank" style="background:var(--primary);color:white;padding:6px 12px;border-radius:6px;text-decoration:none;font-size:14px;font-weight:bold">
-                                Open Chat ➤
-                            </a>
-                            <button onclick="copyToClipboard('${waLink}')" 
-                                    style="background:#075E54;color:white;border:none;padding:6px 12px;border-radius:6px;font-size:14px;cursor:pointer;font-weight:bold">
-                                Copy 🔗
-                            </button>
+                        <strong>📱 +${clean}</strong>
+                        <div style="display:flex;gap:8px;flex-wrap:wrap">
+                            <a href="${link}" target="_blank">Open Chat ➤</a>
+                            <button onclick="copy('${link}')" style="background:#075E54;padding:6px 12px;border:none;border-radius:6px;color:white;cursor:pointer">Copy 🔗</button>
                         </div>
                     `;
-                    resultDiv.appendChild(card);
-                } else {
-                    console.warn(`⚠️ Invalid number skipped: ${num} (length: ${cleanNum.length})`);
+                    res.appendChild(card);
                 }
             });
-
-            if (validCount === 0) {
-                resultDiv.innerHTML = '<p style="color:#666;text-align:center;padding:20px">⚠️ No valid numbers found.<br>Please check format: <strong>CountryCode + Number</strong> (e.g., 919876543210)</p>';
+            
+            if (count === 0) {
+                res.innerHTML = '<p style="color:#666;text-align:center">⚠️ No valid numbers. Format: 919876543210</p>';
             } else {
-                showToast(`✅ Generated ${validCount} link${validCount > 1 ? 's' : ''}!`);
+                showToast(`✅ Generated ${count} link${count>1?'s':''}!`);
             }
         }
 
-        // Allow Ctrl+Enter to generate links
-        document.getElementById('message').addEventListener('keydown', function(e) {
-            if (e.ctrlKey && e.key === 'Enter') {
-                generateLinks();
-            }
-        });
-        document.getElementById('numbers').addEventListener('keydown', function(e) {
-            if (e.ctrlKey && e.key === 'Enter') {
-                generateLinks();
-            }
-        });
+        // Ctrl+Enter shortcut
+        document.getElementById('message').onkeydown = e => { if(e.ctrlKey&&e.key==='Enter') generate(); };
+        document.getElementById('numbers').onkeydown = e => { if(e.ctrlKey&&e.key==='Enter') generate(); };
     </script>
 </body>
 </html>
